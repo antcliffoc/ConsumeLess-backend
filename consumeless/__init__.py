@@ -261,9 +261,7 @@ def login_user():
         abort(error(400, "User does not exist"))
 
     if check_password_hash(user.password_hash, password):
-        session.clear()
-        session['user_id'] = user.id
-        token = (repr(user.encode_auth_token(user.id))[2:-1])
+        token = (repr(user.encode_auth_token())[2:-1])
         return jsonify({'message': f"successfully logged in user: {user.username}", 'token' : str(token)})
 
     abort(error(400, "Invalid password"))

@@ -81,7 +81,7 @@ class User(db.Model):
             'latitude': self.latitude
         }
 
-    def encode_auth_token(self, user_id):
+    def encode_auth_token(self):
         """
         Generates the Auth Token
         :return: string
@@ -89,7 +89,9 @@ class User(db.Model):
         payload = {
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=3600),
             'iat': datetime.datetime.utcnow(),
-            'user_id': user_id
+            'user_id': self.id,
+            'user_long': self.longitude,
+            'user_lat': self.latitude
         }
         return jwt.encode(
             payload,
