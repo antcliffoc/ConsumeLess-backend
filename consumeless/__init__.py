@@ -100,7 +100,7 @@ class ApiItem(Resource):
         owner_id=token_data['user_id']
         deposit=request.form.get('deposit')
         overdue_charge=request.form.get('overdue_charge')
-        created_at=date.today().strftime("%d/%m/%Y")
+        created_at=date.today()
         t = text(f"select users.latitude from users, items where users.id = {owner_id} ;")
         latitude = db.session.execute(t).first()[0] if db.session.execute(t).first() else None
         t = text(f"select users.longitude from users, items where users.id = {owner_id} ;")
@@ -124,6 +124,7 @@ class ApiItem(Resource):
 class ApiUser(Resource):
     def get(self, u_id):
         user = User.query.filter_by(id=u_id).first()
+        print(user.serialize())
         if user is None:
             return error(404, "User not found")
 
@@ -133,12 +134,13 @@ class ApiUser(Resource):
         username=request.form.get('username')
         email=request.form.get('email')
         password_hash=generate_password_hash(request.form.get('password'))
-        created_at=date.today().strftime("%d/%m/%Y")
+        created_at=date.today()
         postcode=request.form.get('postcode')
         if app.config['TESTING'] == True:
             latitude = 51.51746
             longitude = -0.07329
         else:
+            print(f'https://maps.googleapis.com/maps/api/geocode/json?components=country:GB|postal_code:{postcode}&key={API_KEY}')
             long_lat = requests.get(f'https://maps.googleapis.com/maps/api/geocode/json?components=country:GB|postal_code:{postcode}&key={API_KEY}')
             latitude = json.loads(long_lat.content)['results'][0]['geometry']['location']['lat']
             longitude = json.loads(long_lat.content)['results'][0]['geometry']['location']['lng']
