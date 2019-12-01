@@ -140,7 +140,6 @@ class ApiUser(Resource):
             latitude = 51.51746
             longitude = -0.07329
         else:
-            print(f'https://maps.googleapis.com/maps/api/geocode/json?components=country:GB|postal_code:{postcode}&key={API_KEY}')
             long_lat = requests.get(f'https://maps.googleapis.com/maps/api/geocode/json?components=country:GB|postal_code:{postcode}&key={API_KEY}')
             latitude = json.loads(long_lat.content)['results'][0]['geometry']['location']['lat']
             longitude = json.loads(long_lat.content)['results'][0]['geometry']['location']['lng']
@@ -154,7 +153,7 @@ class ApiUser(Resource):
                     longitude = longitude)
             db.session.add(user)
             db.session.commit()
-            token = (repr(user.encode_auth_token(user.id))[2:-1])
+            token = (repr(user.encode_auth_token())[2:-1])
             return jsonify({'message': f"successfully added user: {user.username}", 'token' : str(token)})
         except IntegrityError as e:
             if isinstance(e.orig, UniqueViolation):
